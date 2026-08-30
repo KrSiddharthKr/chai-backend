@@ -1,3 +1,32 @@
 nodemon --> whenever the files are changed , it automatically restarts the server
 
+prettier is also dev dependency
 
+db connection studying ----> in mongodb atlas , you should allow your ip address access, correct id and pwd,
+never do allow access from anywhere
+
+export const DB_NAME="videotube" ---> this was added in cosntants.js becz it is application db name, not added in .env
+
+2 approach of connecting with db:
+put all code in index files and index file code function directly executed
+write code in db folder and import it in index file which the code will be clean, separated and modular
+
+print the connectionInstance from index.js from src/db/
+study about process.exit(1);
+
+app will be thorugh express and db will be through mongoose
+
+mongoose only connects with the db
+whenever communicating with db, keep these points in mind:
+wrap it in try-catch
+db is always in another continent, it means it takes time and hence use async-await
+
+
+
+always import and config as early as possible in my application of env , load it in first variable
+
+
+import syntax in dotenv can be used as experimental features like this
+while writing code make sure to test both the try and catch block with positive and -ve cases
+
+when changing the env variable you have to restart the server, nodemon can't do anything of its own

@@ -1,0 +1,3 @@
+nodemon --> whenever the files are changed , it automatically restarts the server
+
+

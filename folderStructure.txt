@@ -1,0 +1,28 @@
+Industry Std Folder Structure
+📁 Root Directory Files
+These files reside at the very top level of your project structure:
+* package.json: Manages project dependencies, scripts, and metadata.
+* .env: Holds environment variables and sensitive configuration keys.
+* Other Config Files: Includes configuration files like Readme, .gitignore, .eslintrc (lint), and .prettierrc (prettier) to manage formatting and repository setup.
+📂 Source Directory (src)
+The main folder containing all your application code.
+📄 Key Files in src (will always be there)
+* index.js (or index): The main entry point of the application. This is where the database connection is initialized at application startup.
+* app.js (or app): Sets up application-level configurations, including cookies, URL encoding, CORS, and general middleware.
+* constants.js (or constants): Stores global constant values, such as enums and the database name (DB_name).
+📁 Sub-folders in src
+These directories isolate and organize your core backend logic:
+* DB
+    * Purpose: Contains the actual code and configuration needed to establish the database connection.
+* Models
+    * Purpose: Defines the data schemas and structures (the blueprint of how your data is stored).
+* Controllers
+    * Purpose: Stores the core business logic, functionalities, and handler functions. Controllers take incoming data, process it, and return responses.
+* Routes
+    * Purpose: Defines the API endpoints (URIs) and maps them to their respective controllers.
+* Middlewares
+    * Purpose: Functions that run during the request-response cycle (e.g., authentication, logging, parsing) before reaching the controller. (Not fully discussed yet).
+* Utils
+    * Purpose: Houses reusable utility/helper functions that are needed across multiple parts of the application.
+* More (depends)
+    * Purpose: Additional directories that may be added as the project grows (e.g., services, tests, mail templates), depending on the specific scale of the application.

@@ -105,3 +105,38 @@ DB is another continent, hence use promises or try-catch with async-await whenev
 
 
 always use async await because talking to DB takes time and use try catch
+
+
+
+
+
+
+
+
+lect-9:
+
+url -> req.params --> url has data , url has ? , search, etc.
+req.body -> data can be in any format , configs of different type
+data will be pulled from cookies too
+
+cookie parser -> middleware, whenever you are using middleware, you mostly use app.use()
+app.use() is used mostly in configs or middleware
+
+settings in cors -> corsOptions is an object which has defined origin (means from where in frontend i am accepting request for my backend)
+CORS_ORIGIN ----> do not mention in * in real production projects means request can come from anywhere, write the url specifically , we can use for now
+what is the meaning of this: (property) e.CorsOptions.credentials?: boolean | undefined?
+
+
+data can come from anywhere in backend -> json, form, body -> there are some settings to be made -> app.use for configs -> use express.json() has options , limit of any size , when we get data from url, somewhere it has + for space or %20 for space etc. use url encoder hence we use app.use(express.urlencoded({}))
+
+app.use(express.static) ---> files/folder store or imgs ---> puclic assets to be stored and hence named as "public"
+
+cookieParser from "cookie-parser --> server se user ka browser hai na , uske andar ki cookies access kar sako, set the cookies too, do the crud ops on cookies and for that write app.use()
+
+middleware --> a check added in between access the endpoint and sending the response from the backend, this is to avoid unnecessary use of compute power, there can be multiple middlewares, it is added in sequence
+
+(req, res) is not always two it is (err, req, res, next) --> the next here is the middleware, it is only a flag, just keep checking at the next middlewares
+
+also why writing connectDB in every controller and so many times, hence create a utility file and a generalize function for wrapper , hence asyncHandler is Created
+
+whenever there is an error, it should go via ApiError.js

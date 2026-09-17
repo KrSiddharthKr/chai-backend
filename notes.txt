@@ -113,6 +113,11 @@ always use async await because talking to DB takes time and use try catch
 
 
 
+
+
+
+
+
 lect-9:
 
 url -> req.params --> url has data , url has ? , search, etc.
@@ -140,3 +145,172 @@ middleware --> a check added in between access the endpoint and sending the resp
 also why writing connectDB in every controller and so many times, hence create a utility file and a generalize function for wrapper , hence asyncHandler is Created
 
 whenever there is an error, it should go via ApiError.js
+
+00:03 Explaining custom API response, error handling, and middleware setup
+02:03 Create an app using Express
+06:00 Understanding the request and response handling in Express
+07:57 Installing and using cookie parser and cross origin resource sharing packages for middleware
+11:42 Configuring custom API responses and error handling in production
+13:29 Custom API response and error handling
+17:29 Setting up static file configuration in Express
+19:08 API response and error handling overview
+23:09 Understanding the concept of 'next' in middleware
+24:42 Creating a utility file for error handling and database operations
+28:08 Removing curly braces and understanding disassembly of functions.
+29:56 Error handling and response crafting using custom API
+33:40 Standardize API errors and responses
+35:24 Custom API error handling
+38:48 Custom api response and error handling
+40:27 Custom API response and error handling in Express
+43:57 Setting API response standards and error handling
+45:54 Testing API controllers and databases in a production-grade code
+What is asyncHandler?
+asyncHandler is a higher-order function.
+A higher-order function is a function that takes another function as an argument and possibly returns a new function.
+
+Why is asyncHandler needed?
+In Express.js, if an asynchronous function throws an error, you need to explicitly pass that error to the next function for the Express error-handling middleware to catch it. Without this, your server might crash or not handle the error properly.
+
+Different Variations 
+
+Version 1: The normal function
+const asyncHandler = () => {};
+This is a simple function 
+
+Version 2: The higher-order function
+const asyncHandler = (func) => {
+  return () => {};
+};
+Takes a function (func) as an argument.
+Returns a new function.
+
+Version 3: The higher-order async function
+const asyncHandler = (func) => {
+  return async () => {};
+};
+Same as above, but the returned function is asynchronous (async).
+Used when the inner function (func) involves asynchronous operations.
+
+next(err): If an error occurs (the catch block is triggered), next(err) is called with the err argument. This signals to Express that an error occurred, so it should skip all regular middleware functions and proceed directly to error-handling middleware.
+
+1. creating app using express 
+2. Api error and Api response
+3. installing middle wares like cors, cookie parser , allowing url encoded, json responses
+
+
+@sanskaripatrick7191
+2 years ago (edited)
+33:05 I'm pretty sure that there is a mistake in the asyncHandler that uses the promise (the top function). 
+There should be no curly braces after the arrow otherwise there wouldn't be a value returned at all -> and that is because we haven't written an explicit return statement.
+The correct code is to either include a return statement before the internal arrow function or to just remove the curly braces, although adding a return statement makes it a bit easier to understand.
+Reply
+@mohd.maasir8198
+2 years ago
+thanks 
+I was also having doubt there.
+Reply
+@Abhay_Pandey_1
+1 year ago
+Sir ne pehle return statement use kiya tha smjhane ke liye hta diya firr use krna bhool gaye shayad
+Reply
+@Arnav404
+1 year ago
+ @Abhay_Pandey_1  yuss
+
+In promises there's a minor mistake, the asyncHandler you defined just executes instead of returning the wrapped requestHandler, either removing the curly braces or adding a explicit return statenment is needed. Here's the correct code:
+
+const asyncHandler = (requestHandler) => (req, res, next) => {
+   Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err));
+};
+
+OR
+
+const asyncHandler = (requestHandler) => {
+  return (req, res, next) => {
+     Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err));
+  }
+}
+Internal Working: 
+        1. .get('/user' , (err, req , res , next)=>{})
+        2. so u see second parameter expects function with (err,req,res,next)
+        3. so when we wrapped controller (asyncHandler(asyncController))
+        4. then it must return fn with req , res , next 
+        5. futher express takes that fn and pass req , res , next to asyncHandler
+        6. that asyncHandler further passes it to the controllers(async task)
+
+    Ex: 
+
+    const asyncHandler = (requestHandler) => {
+        return (req, res, next) => {
+            Promise.resolve(requestHandler(req, res, next)).catch((err) => {
+                next(err);
+            });
+        };
+    
+    const userController = () => {
+        // database / async tasks 
+    }
+    
+    app.get('/user' , asyncHandler(userController))
+
+Tips for asyncHandler : 
+
+Express cannot catch async errors by default
+Unhandled Promise rejections crash Node (on purpose)
+asyncHandler is a safety bridge
+Always wrap async routes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+lect-10
+files in models ---> user and video .models.js
+mongodb automatically generates a unique id which is saved in bson format not in json
+avatar and coverImage ---> third party service link to be saved means videos and images are kept separated
+watchHistory ---> tracks which videos are watched , object array , id are pushed to track history
+each video has owner
+index in db means ----> to search any field in the db keep the index as true, little expensive but will heavily helpful in searching , used searching for optimization
+store pwd in encrypted format in db
+videoFile--->do not store as media in mongodb, store as url third party
+usage of special package --> mongoose aggregate paginate helpful for writing aggregation queries, we are using this because of watchHistory object array
+npm i mongoose-aggregate-paginate-v2
+
+bcrypt is same as bcryptjs(installed this) , check their wroking functionality, install it, helps to hash the password
+jwt ---> jsonwebtoken , jwt.io 
+
+direct encryption is not possible hence use mongo middleware hooks, "Pre" hook -> before data is getting saved, any call or controller, run this hook , we can do any action , here to encrypt the pwd
+these hooks are in model files , which events can be used for hook 
+
+arrow function doesnot have this reference context () => {} and here we need context only
+these functions are written as async function and middleware here hence (next) in function
+rounds=10 in bcrypt.hash()
+
+any changes in the data will always change the pwd becz its a prehook
+jab pwd field ka modification bheju then only run this preHook code and when i am new or updating the pwd
+
+inject methods or create custom methods to validate the pwd 
+bcrypt lib can do both hash and also check pwd
+
+compare() method --> pwd (data: string) and the encrypted pwd
+since this is cryptographic and will take time hence use await here with async
+
+jwt ---> it is a bearer token ,  it is like a key 
+jwt is written in .env, ACCESS_TOKEN_SECRET, ACCESS_TOKEN_EXPIRY , read the docuemntation to understadn it , also refresh token, REFRESH_TOKEN_SECRET, REFRESH_TOKEN_EXPIRY
+
+session and cookies will be used here, ACCESS_TOKEN_SECRET will not be stored in the db but REFRESH_TOKEN_SECRET will be stored in the db
+
+use the above same method for the generation of the access and refresh token
+find out why async and await is being used but here it is not used 
+the jwt.sign( it has key payload and the value is coming from db), this accesstoken is for sign in
